@@ -46,6 +46,36 @@ def agregar_empleado():
     except Exception as e:
         return jsonify({'error': str(e)})
 
+@app.route('/actualizarempleado/<int:id>', methods=['PUT'])
+def actualizar_empleado(id):
+    try:
+        data = request.get_json()
+        apellido = data.get('apellido')
+        nombre = data.get('nombre')
+        pais = data.get('pais')
 
+        cur = mysql.connection.cursor()
+        cur.execute('UPDATE empleados SET apellido = %s, nombre = %s, pais = %s WHERE id = %s', (apellido, nombre, pais, id))
+        mysql.connection.commit()
+        cur.close()
 
-app.run(port=3000, debug=True)
+        return jsonify({'mensaje': 'Empleado actualizado correctamente'})
+    
+    except Exception as e:
+        return jsonify({'error': str(e)})
+
+@app.route('/eliminarempleado/<int:id>', methods=['DELETE'])
+def eliminar_empleado(id):
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute('DELETE FROM empleados WHERE id = %s', (id,))
+        mysql.connection.commit()
+        cur.close()
+
+        return jsonify({'mensaje': 'Empleado eliminado correctamente'})
+    
+    except Exception as e:
+        return jsonify({'error': str(e)})
+
+if __name__ == '__main__':
+    app.run(port=3000, debug=True)
