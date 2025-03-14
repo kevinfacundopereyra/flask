@@ -28,5 +28,19 @@ def get_empleados():
     empleados = [ {'apellido': row[0]} for row in data ]
     return jsonify({'empleados': empleados} )
 
-app.run(port=3000, debug=True)
+@app.route('/empleados/<string:pais>')
+def empleados(pais):
+    cur = mysql.connection.cursor()
+    cur.execute('SELECT nombre, apellido FROM empleados WHERE pais= %s', (pais,))
+    data = cur.fetchall()
+    cur.close()
+    
+    empleados = [ { 'apellido': row[1],
+                    'nombre': row[0]} 
+                 for row in data]
+    
+    return jsonify({'mensaje': 'Datos traidos exitosamente!'}, { 'empleados': empleados })
+    
+if (__name__) == '__main__' :
+    app.run(port=3000, debug=True)
 
